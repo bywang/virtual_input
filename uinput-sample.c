@@ -21,7 +21,7 @@ main(void)
     int                    dx, dy;
     int                    i;
 
-    fd = open("/dev/input/uinput", O_WRONLY | O_NONBLOCK);
+    fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0)
         die("error: open");
 

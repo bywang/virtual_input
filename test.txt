@@ -1,5 +1,0 @@
-key 3
-key 4
-key 5
-mouse 10 10
-mouse 10 10

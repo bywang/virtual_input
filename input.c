@@ -52,6 +52,8 @@ void createUinputDev(int fd)
 
     if(ioctl(fd, UI_DEV_CREATE) < 0)
         die("error: ioctl");
+
+    sleep(5);
 }
 
 void destroyUinputDev(int fd)
@@ -78,8 +80,12 @@ void setMouseParameter(int mouseFd)
 void setKeysParameter(int keysFd)
 {
     int index; 
+
+    if(ioctl(keysFd, UI_SET_EVBIT, EV_KEY) < 0)
+        die("error: ioctl");
     for(index = 0; index < 99; index++)
-        ioctl(keysFd, UI_SET_KEYBIT, hisKeycode[index]);
+        if(ioctl(keysFd, UI_SET_KEYBIT, hisKeycode[index])<0)
+            die("error: ioctl");
 }
 
 void setTouchParameter(int touchFd)
@@ -122,6 +128,8 @@ void sendKeysEvent(int keysFd, int keycode)
 void sendMouseEvent(int mouseFd, int dx, int dy)
 {
     struct input_event ev;
+
+    printf("mouse event: %d, %d\n", dx, dy);
     
     memset(&ev, 0, sizeof(struct input_event));
     ev.type = EV_REL;
@@ -244,7 +252,7 @@ int main(int argc, char *argv[])
 
     setKeysParameter(fd);
     setMouseParameter(fd);
-    setTouchParameter(fd);
+    //setTouchParameter(fd);
 
     createUinputDev(fd);
 
