@@ -14,8 +14,8 @@
     } while(0)
 
 #define DEVPATH "/dev/uinput"
-#define LINESIZE 32
-#define WORDSIZE 8
+#define LINESIZE 64
+#define WORDSIZE 16
 #define HELPTEXT "usage: \
     input-report help; print this message \
     input-report event-file \
@@ -249,22 +249,24 @@ int main(int argc, char *argv[])
         printf("%s", HELPTEXT);
     }
 
-    printf("argc is %d\n", argc);
-    printf("dataFile path is %s\n", argv[1]);
-
     fd = openInputDev(DEVPATH);
+
+    setKeysParameter(fd);
+    setMouseParameter(fd);
+    setTouchParameter(fd);
+
+    createUinputDev(fd);
 
     dataFile = fopen(argv[1], "r");
     if(dataFile == NULL)
         die("open data file");
     while(fgets(eventBuf, LINESIZE, dataFile) != NULL) { 
         printf("%s\n", eventBuf);
-        getEventInfo(eventBuf, LINESIZE, eventType, eventParaX, eventParaY);
+        getEventInfo(eventBuf, strlen(eventBuf), eventType, eventParaX, eventParaY);
 
         if(strlen(eventType) != 0) {
             if(!strcmp(eventType, "key")) {
-                printf("in key event\n");
-                printf("eventParaX is %d\n", atoi(eventParaX));
+                //printf("eventParaX is %d\n", atoi(eventParaX));
                 if(strlen(eventParaX) != 0)
                     sendKeysEvent(fd, atoi(eventParaX));
             } 
@@ -283,10 +285,13 @@ int main(int argc, char *argv[])
         sleep(atoi(argv[2]));
     }
 
+    printf("before fclose\n");
     fclose(dataFile);
+    printf("before destroy\n");
     destroyUinputDev(fd);
+    printf("before close\n");
     closeInputDev(fd);
-    //srand(time(NULL));
+    printf("after close\n");
 
     return 0;
 }
