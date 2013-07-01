@@ -1,7 +1,7 @@
-BIN=input-report
+BIN=input
 
 all: $(BIN)
 
-input-report: input-report.c
+input: input.c
 
 PHONY: all
