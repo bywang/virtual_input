@@ -14,8 +14,8 @@
     } while(0)
 
 #define DEVPATH "/dev/uinput"
-#define LINESIZE 64
-#define WORDSIZE 16
+#define LINESIZE 32
+#define WORDSIZE 8
 #define HELPTEXT "usage: \
     input-report help; print this message \
     input-report event-file \
@@ -104,7 +104,6 @@ void sendKeysEvent(int keysFd, int keycode)
     if(write(keysFd, &ev, sizeof(struct input_event)) < 0)
         die("error: write");
 
-    printf("sendKeys down\n");
     memset(&ev, 0, sizeof(struct input_event));
     ev.type = EV_KEY;
     ev.code = keycode;
@@ -112,7 +111,6 @@ void sendKeysEvent(int keysFd, int keycode)
     if(write(keysFd, &ev, sizeof(struct input_event)) < 0)
         die("error: write");
     
-    printf("sendKeys up\n");
     memset(&ev, 0, sizeof(struct input_event));
     ev.type = EV_SYN;
     ev.code = 0;
@@ -180,7 +178,6 @@ void getEventInfo(char eventBuf[], int lineSize, char eventType[], char eventPar
     int eventParaYPos = 0;
     int i = 0;
 
-    printf("linesize is %d\n", lineSize);
     for(i = 0; i<lineSize; i++){
         if(eventBuf[i] != ' ') {
             eventTypePos = i;
@@ -188,7 +185,6 @@ void getEventInfo(char eventBuf[], int lineSize, char eventType[], char eventPar
         }
     }
 
-    printf("eventTypePos is %d\n", eventTypePos);
     for(i = eventTypePos; i<lineSize; i++){
         if( eventBuf[i] != ' ' )
             eventType[i-eventTypePos] = eventBuf[i];
@@ -197,7 +193,6 @@ void getEventInfo(char eventBuf[], int lineSize, char eventType[], char eventPar
             break;
         }
     }
-    printf("eventType is %s\n", eventType);
 
     for(; i<lineSize; i++){
         if(eventBuf[i] != ' ') {
@@ -206,7 +201,6 @@ void getEventInfo(char eventBuf[], int lineSize, char eventType[], char eventPar
         }
     }
 
-    printf("eventParaXPos is %d\n", eventParaXPos);
     for(i = eventParaXPos; i<lineSize; i++){
         if( eventBuf[i] != ' ' )
             eventParaX[i-eventParaXPos] = eventBuf[i];
@@ -216,7 +210,6 @@ void getEventInfo(char eventBuf[], int lineSize, char eventType[], char eventPar
         }
     }
 
-    printf("eventParaX is %s\n", eventParaX);
     for(; i<lineSize; i++) {
         if(eventBuf[i] != ' ') {
             eventParaYPos = i;
@@ -224,7 +217,6 @@ void getEventInfo(char eventBuf[], int lineSize, char eventType[], char eventPar
         }
     }
 
-    printf("eventParaYPos is %d\n", eventParaYPos);
     for(i = eventParaYPos; i<lineSize; i++){
         if( eventBuf[i] != ' ' )
             eventParaY[i-eventParaYPos] = eventBuf[i];
@@ -233,7 +225,6 @@ void getEventInfo(char eventBuf[], int lineSize, char eventType[], char eventPar
             break;
         }
     }
-    printf("eventParaY is %s\n", eventParaY);
 }
 
 int main(int argc, char *argv[])
@@ -261,12 +252,10 @@ int main(int argc, char *argv[])
     if(dataFile == NULL)
         die("open data file");
     while(fgets(eventBuf, LINESIZE, dataFile) != NULL) { 
-        printf("%s\n", eventBuf);
         getEventInfo(eventBuf, strlen(eventBuf), eventType, eventParaX, eventParaY);
 
         if(strlen(eventType) != 0) {
             if(!strcmp(eventType, "key")) {
-                //printf("eventParaX is %d\n", atoi(eventParaX));
                 if(strlen(eventParaX) != 0)
                     sendKeysEvent(fd, atoi(eventParaX));
             } 
@@ -285,13 +274,9 @@ int main(int argc, char *argv[])
         sleep(atoi(argv[2]));
     }
 
-    printf("before fclose\n");
     fclose(dataFile);
-    printf("before destroy\n");
     destroyUinputDev(fd);
-    printf("before close\n");
     closeInputDev(fd);
-    printf("after close\n");
 
     return 0;
 }
