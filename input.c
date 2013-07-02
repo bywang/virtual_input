@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2013 Hisense Co.,LTD
+ *
+ * Author wangbaoyun@hisense.com
+ *
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
