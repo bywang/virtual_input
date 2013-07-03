@@ -1,7 +1,10 @@
-BIN=input
+CFLAGS = -g -O2 -c
+LDFLAGS = 
 
-all: $(BIN)
+TARGET = input
 
-input: input.c
+%.o:%.c
+	gcc $(CFLAGS) $< 
 
-PHONY: all
+$(TARGET): $(TARGET).o
+	gcc $< -o $@ $(LDFLAGS)
