@@ -22,13 +22,14 @@
 #define DEVPATH "/dev/uinput"
 #define LINESIZE 32
 #define WORDSIZE 8
-#define HELPTEXT "usage: \
-    input-report help; print this message \
-    input-report event-file \
-    event-file content like this: \
-    mouse rel_x rel_y \
-    key keycode \
-    touch abs_x abs_y \
+#define HELPTEXT "usage: \n \
+    input help; print this message \n \
+    input event-file interval \n \
+    event-file content like this: \n \
+    mouse rel_x rel_y \n \
+    key keycode \n \
+    touch abs_x abs_y \n \
+    interval like 1 that represents 1 second between two event \n \
     "
 
 int openInputDev(char *devPath)
