@@ -90,6 +90,8 @@ void setKeysParameter(int keysFd)
 
     if(ioctl(keysFd, UI_SET_EVBIT, EV_KEY) < 0)
         die("error: ioctl");
+    if(ioctl(keysFd, UI_SET_KEYBIT, BTN_LEFT)<0)
+        die("error: ioctl");
     for(index = 0; index < 99; index++)
         if(ioctl(keysFd, UI_SET_KEYBIT, hisKeycode[index])<0)
             die("error: ioctl");

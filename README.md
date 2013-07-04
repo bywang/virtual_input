@@ -22,7 +22,6 @@ sudo ./input event_file interval on ubuntu
 tested on ubuntu and android 4.2
 
 known issues:
-the mouse event can not work well in android 4.2
 the touch event can not work
 
 
