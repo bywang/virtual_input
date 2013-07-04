@@ -92,6 +92,8 @@ void setKeysParameter(int keysFd)
         die("error: ioctl");
     if(ioctl(keysFd, UI_SET_KEYBIT, BTN_LEFT)<0)
         die("error: ioctl");
+    if(ioctl(keysFd, UI_SET_KEYBIT, BTN_TOUCH)<0)
+        die("error: ioctl");
     for(index = 0; index < 99; index++)
         if(ioctl(keysFd, UI_SET_KEYBIT, hisKeycode[index])<0)
             die("error: ioctl");
@@ -167,6 +169,13 @@ void sendTouchEvent(int touchFd, int x, int y)
     struct input_event ev;
     
     memset(&ev, 0, sizeof(struct input_event));
+    ev.type = EV_KEY;
+    ev.code = BTN_TOUCH;
+    ev.value = 0;
+    if(write(touchFd, &ev, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&ev, 0, sizeof(struct input_event));
     ev.type = EV_ABS;
     ev.code = ABS_X;
     ev.value = x;
@@ -180,6 +189,13 @@ void sendTouchEvent(int touchFd, int x, int y)
     if(write(touchFd, &ev, sizeof(struct input_event)) < 0)
         die("error: write");
     
+    memset(&ev, 0, sizeof(struct input_event));
+    ev.type = EV_KEY;
+    ev.code = BTN_TOUCH;
+    ev.value = 1;
+    if(write(touchFd, &ev, sizeof(struct input_event)) < 0)
+        die("error: write");
+
     memset(&ev, 0, sizeof(struct input_event));
     ev.type = EV_SYN;
     ev.code = 0;
@@ -261,7 +277,7 @@ int main(int argc, char *argv[])
 
     setKeysParameter(fd);
     setMouseParameter(fd);
-    //setTouchParameter(fd);
+    setTouchParameter(fd);
 
     createUinputDev(fd);
 
